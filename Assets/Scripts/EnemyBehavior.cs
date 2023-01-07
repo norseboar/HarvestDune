@@ -28,7 +28,7 @@ public class EnemyBehavior : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Vector2 position = transform.position;
         Vector2 positionOfTarget = target.transform.position;
@@ -39,7 +39,7 @@ public class EnemyBehavior : MonoBehaviour
                 state = State.Attack;
             }
             else {
-                transform.position = Vector2.MoveTowards(position, positionOfTarget, speed * Time.deltaTime);
+                transform.position = Vector2.MoveTowards(position, positionOfTarget, speed * Time.fixedDeltaTime);
             }
         }
         else if (state == State.Attack) {
