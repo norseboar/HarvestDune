@@ -11,12 +11,12 @@ public class EnemyBehavior : MonoBehaviour
     }
     
     State state = State.None;
-    public GameObject target;
-    public SpriteRenderer targetSpriteRenderer;
-    public bool toggle = false;
+    public TargetBehavior target;
 
     // When attacking the target, the enemy will attack it as long as it's within range distance.
     // When moving towards the target, the enemy will get within approach distance before attacking.
+    // TODO: It would be cool if it observed the direction the target is moving,
+    //  and only got within approach distance if it saw that it was moving away from the enemy.
     public float approachDistance = 5.0f;
     public float rangeDistance = 10.0f;
     public float speed = 1.0f;
@@ -30,7 +30,7 @@ public class EnemyBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector2 position = gameObject.transform.position;
+        Vector2 position = transform.position;
         Vector2 positionOfTarget = target.transform.position;
         float distance = Vector2.Distance(position, positionOfTarget);
         if (state == State.Approach) {
@@ -39,37 +39,18 @@ public class EnemyBehavior : MonoBehaviour
                 state = State.Attack;
             }
             else {
-                MoveTowardsTarget(position, positionOfTarget);
+                transform.position = Vector2.MoveTowards(position, positionOfTarget, speed * Time.deltaTime);
             }
         }
         else if (state == State.Attack) {
             // If target is in range, attack, otherwise change to approach.
             if (distance < rangeDistance) {
-                AttackTarget(target);
+                target.TriggerHit(gameObject);
             }
             else {
                 state = State.Approach;
             }
         }
     }
-
-    void MoveTowardsTarget(Vector2 position, Vector2 positionOfTarget)
-    {
-        gameObject.transform.position = Vector2.MoveTowards(gameObject.transform.position, target.transform.position, speed * Time.deltaTime);
-    }
-
-    void AttackTarget(GameObject target)
-    {
-        if (toggle)
-        {
-            targetSpriteRenderer.color = Color.red;
-        }
-        else
-        {
-            targetSpriteRenderer.color = Color.blue;
-        }
-        toggle = !toggle;
-    }
-    
 
 }
